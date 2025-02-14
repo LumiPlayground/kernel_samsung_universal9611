@@ -924,29 +924,7 @@ static int exynos_get_trend(void *p, int trip, enum thermal_trend *trend)
 }
 
 #ifdef CONFIG_THERMAL_EMULATION
-static void exynos9810_tmu_set_emulation(struct exynos_tmu_data *data,
-					 int temp)
-{
-	unsigned int val;
-	u32 emul_con;
-
-	emul_con = EXYNOS_TMU_REG_EMUL_CON;
-
-	val = readl(data->base + emul_con);
-
-	if (temp) {
-		temp /= MCELSIUS;
-		val &= ~(EXYNOS_EMUL_DATA_MASK << EXYNOS_EMUL_DATA_SHIFT);
-		val |= (temp_to_code_with_sensorinfo(data, temp, &data->sensor_info[0]) << EXYNOS_EMUL_DATA_SHIFT)
-			| EXYNOS_EMUL_ENABLE;
-	} else {
-		val &= ~EXYNOS_EMUL_ENABLE;
-	}
-
-	writel(val, data->base + emul_con);
-}
-
-static void exynos9610_tmu_set_emulation(struct exynos_tmu_data *data,
+static void exynos9_tmu_set_emulation(struct exynos_tmu_data *data,
 					 int temp)
 {
 	unsigned int val;
@@ -984,6 +962,7 @@ out:
 	return ret;
 }
 #else
+#define exynos9_tmu_set_emulation NULL
 static int exynos_tmu_set_emulation(void *drv_data, int temp)
 	{ return -EINVAL; }
 #endif /* CONFIG_THERMAL_EMULATION */
@@ -1325,7 +1304,7 @@ static int exynos_map_dt_data(struct platform_device *pdev)
 		data->tmu_initialize = exynos9810_tmu_initialize;
 		data->tmu_control = exynos9810_tmu_control;
 		data->tmu_read = exynos9810_tmu_read;
-		data->tmu_set_emulation = exynos9810_tmu_set_emulation;
+		data->tmu_set_emulation = exynos9_tmu_set_emulation;
 		data->tmu_clear_irqs = exynos9810_tmu_clear_irqs;
 		data->ntrip = 8;
 		break;
@@ -1333,7 +1312,7 @@ static int exynos_map_dt_data(struct platform_device *pdev)
 		data->tmu_initialize = exynos9610_tmu_initialize;
 		data->tmu_control = exynos9610_tmu_control;
 		data->tmu_read = exynos9610_tmu_read;
-		data->tmu_set_emulation = exynos9610_tmu_set_emulation;
+		data->tmu_set_emulation = exynos9_tmu_set_emulation;
 		data->tmu_clear_irqs = exynos9610_tmu_clear_irqs;
 		data->ntrip = 8;
 		break;
