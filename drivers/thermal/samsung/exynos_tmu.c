@@ -1034,28 +1034,7 @@ static void exynos_tmu_work(struct work_struct *work)
 	enable_irq(data->irq);
 }
 
-static void exynos9810_tmu_clear_irqs(struct exynos_tmu_data *data)
-{
-	unsigned int i, val_irq;
-	u32 pend_reg;
-
-	for (i = 0; i < TOTAL_SENSORS; i++) {
-		if (!(data->sensors & (1 << i)))
-			continue;
-
-		if (i < 5)
-			pend_reg = EXYNOS_TMU_REG_INTPEND0 + EXYNOS_TMU_REG_INTPEN_OFFSET * i;
-		else if (i < 8)
-			pend_reg = EXYNOS_TMU_REG_INTPEND5 + EXYNOS_TMU_REG_INTPEN_OFFSET * (i - 5);
-		else
-			pend_reg = EXYNOS_TMU_REG_INTPEND8 + EXYNOS_TMU_REG_INTPEN_OFFSET * (i - 8);
-
-		val_irq = readl(data->base + pend_reg);
-		writel(val_irq, data->base + pend_reg);
-	}
-}
-
-static void exynos9610_tmu_clear_irqs(struct exynos_tmu_data *data)
+static void exynos9_tmu_clear_irqs(struct exynos_tmu_data *data)
 {
 	unsigned int i, val_irq;
 	u32 pend_reg;
@@ -1305,7 +1284,7 @@ static int exynos_map_dt_data(struct platform_device *pdev)
 		data->tmu_control = exynos9810_tmu_control;
 		data->tmu_read = exynos9810_tmu_read;
 		data->tmu_set_emulation = exynos9_tmu_set_emulation;
-		data->tmu_clear_irqs = exynos9810_tmu_clear_irqs;
+		data->tmu_clear_irqs = exynos9_tmu_clear_irqs;
 		data->ntrip = 8;
 		break;
 	case SOC_ARCH_EXYNOS9610:
@@ -1313,7 +1292,7 @@ static int exynos_map_dt_data(struct platform_device *pdev)
 		data->tmu_control = exynos9610_tmu_control;
 		data->tmu_read = exynos9610_tmu_read;
 		data->tmu_set_emulation = exynos9_tmu_set_emulation;
-		data->tmu_clear_irqs = exynos9610_tmu_clear_irqs;
+		data->tmu_clear_irqs = exynos9_tmu_clear_irqs;
 		data->ntrip = 8;
 		break;
 	default:
