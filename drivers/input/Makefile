@@ -6,7 +6,7 @@
 # Each configuration option enables a list of files.
 
 obj-$(CONFIG_INPUT)		+= input-core.o
-ifneq ($(ONEUI),)
+ifeq ($(CONFIG_GRASS_ONEUI),y)
 INPUT_PREFIX := -samsung
 endif
 input-core-y := input$(INPUT_PREFIX).o input-compat.o input-mt.o ff-core.o

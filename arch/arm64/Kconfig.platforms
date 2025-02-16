@@ -295,5 +295,9 @@ config ARCH_EXYNOS9
 	help
 	  Samsung EXYNOS9 (Meercat/Ananke) SoC based systems
 
+config GRASS_ONEUI
+	bool "OneUI Support"
+	default n
+
 endmenu
 endmenu
